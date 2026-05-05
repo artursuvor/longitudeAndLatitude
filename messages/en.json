@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Coordinate Quest",
+    "subtitle": "Read the latitude and longitude, then click the matching place on the map."
+  },
+  "language": {
+    "label": "Language"
+  },
+  "theme": {
+    "label": "Switch color theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "stats": {
+    "round": "Round",
+    "of": "of",
+    "totalScore": "Total score"
+  },
+  "coordinates": {
+    "title": "Target coordinates",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "controls": {
+    "pickFirst": "Click the map to place your guess.",
+    "guessSelected": "Guess selected. Click another place to move it.",
+    "submit": "Submit guess",
+    "next": "Next round",
+    "finish": "Show final score",
+    "restart": "Restart game"
+  },
+  "map": {
+    "loading": "Loading map...",
+    "clickPrompt": "Click the map to place your guess",
+    "locked": "Map locked",
+    "guessMarker": "Your guess",
+    "targetMarker": "Correct location"
+  },
+  "result": {
+    "title": "Round result",
+    "distance": "Distance",
+    "score": "Score",
+    "correctLocation": "Correct location"
+  },
+  "history": {
+    "title": "Rounds",
+    "pending": "Pending"
+  },
+  "final": {
+    "title": "Final score",
+    "outOf": "out of"
+  },
+  "units": {
+    "kilometers": "km",
+    "points": "pts"
+  }
+}

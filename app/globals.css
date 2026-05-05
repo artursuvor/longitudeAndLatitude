@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --background: #f6f7f2;
+  --foreground: #17211c;
+  --panel: #ffffff;
+  --panel-soft: #edf4ef;
+  --line: #d8dfd8;
+  --brand: #0f766e;
+  --brand-dark: #115e59;
+  --accent: #d97706;
+  --danger: #b91c1c;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #dce8e5;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.dark .leaflet-container {
+  background: #0c1412;
+}
+
+.dark .leaflet-control-zoom a,
+.dark .leaflet-control-attribution {
+  background: rgb(12 10 9 / 0.86);
+  color: #e7e5e4;
+}
+
+.dark .leaflet-control-zoom a {
+  border-color: #44403c;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
+.map-guessing .leaflet-container,
+.map-guessing .leaflet-interactive {
+  cursor: pointer;
+}
+
+.map-locked .leaflet-container,
+.map-locked .leaflet-interactive {
+  cursor: pointer;
+}
+
+.map-pin {
+  --pin: #0f766e;
+  --pin-core: #ccfbf1;
+  display: block;
+  filter: drop-shadow(0 16px 18px rgb(15 23 42 / 0.28));
+  height: 42px;
+  position: relative;
+  width: 36px;
+}
+
+.map-pin::before {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--pin), #fff 8%),
+    var(--pin)
+  );
+  border: 3px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  content: "";
+  height: 28px;
+  left: 4px;
+  position: absolute;
+  top: 2px;
+  transform: rotate(-45deg);
+  width: 28px;
+}
+
+.map-pin::after {
+  background: var(--pin-core);
+  border: 2px solid rgb(255 255 255 / 0.88);
+  border-radius: 999px;
+  content: "";
+  height: 12px;
+  left: 12px;
+  position: absolute;
+  top: 10px;
+  width: 12px;
+}
+
+.map-pin-guess {
+  --pin: #0f766e;
+  --pin-core: #ccfbf1;
+}
+
+.map-pin-target {
+  --pin: #b91c1c;
+  --pin-core: #fee2e2;
+}
+
+.dark .map-pin::before {
+  border-color: #f5f5f4;
+}
+
+.pulse-in {
+  animation: pulse-in 180ms ease-out;
+}
+
+@keyframes pulse-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

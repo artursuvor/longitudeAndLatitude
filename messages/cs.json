@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Coordinate Quest",
+    "subtitle": "Přečti si zeměpisnou šířku a délku a potom klikni na odpovídající místo na mapě."
+  },
+  "language": {
+    "label": "Jazyk"
+  },
+  "theme": {
+    "label": "Přepnout barevný režim",
+    "light": "Světlý",
+    "dark": "Tmavý"
+  },
+  "stats": {
+    "round": "Kolo",
+    "of": "z",
+    "totalScore": "Celkové skóre"
+  },
+  "coordinates": {
+    "title": "Cílové souřadnice",
+    "latitude": "Zeměpisná šířka",
+    "longitude": "Zeměpisná délka"
+  },
+  "controls": {
+    "pickFirst": "Kliknutím do mapy umísti svůj tip.",
+    "guessSelected": "Tip je vybraný. Kliknutím jinam ho přesuneš.",
+    "submit": "Odeslat tip",
+    "next": "Další kolo",
+    "finish": "Zobrazit konečné skóre",
+    "restart": "Restartovat hru"
+  },
+  "map": {
+    "loading": "Načítání mapy...",
+    "clickPrompt": "Kliknutím do mapy umísti svůj tip",
+    "locked": "Mapa je uzamčená",
+    "guessMarker": "Tvůj tip",
+    "targetMarker": "Správné místo"
+  },
+  "result": {
+    "title": "Výsledek kola",
+    "distance": "Vzdálenost",
+    "score": "Skóre",
+    "correctLocation": "Správné místo"
+  },
+  "history": {
+    "title": "Kola",
+    "pending": "Čeká"
+  },
+  "final": {
+    "title": "Konečné skóre",
+    "outOf": "z"
+  },
+  "units": {
+    "kilometers": "km",
+    "points": "bodů"
+  }
+}

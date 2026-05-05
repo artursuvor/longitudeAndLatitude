@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Coordinate Quest",
+    "subtitle": "Lies die Breiten- und Längengrade und klicke dann auf den passenden Ort auf der Karte."
+  },
+  "language": {
+    "label": "Sprache"
+  },
+  "theme": {
+    "label": "Farbschema wechseln",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+  "stats": {
+    "round": "Runde",
+    "of": "von",
+    "totalScore": "Gesamtpunkte"
+  },
+  "coordinates": {
+    "title": "Zielkoordinaten",
+    "latitude": "Breitengrad",
+    "longitude": "Längengrad"
+  },
+  "controls": {
+    "pickFirst": "Klicke auf die Karte, um deinen Tipp zu setzen.",
+    "guessSelected": "Tipp gesetzt. Klicke auf einen anderen Ort, um ihn zu verschieben.",
+    "submit": "Tipp abgeben",
+    "next": "Nächste Runde",
+    "finish": "Endpunktzahl anzeigen",
+    "restart": "Spiel neu starten"
+  },
+  "map": {
+    "loading": "Karte wird geladen...",
+    "clickPrompt": "Klicke auf die Karte, um deinen Tipp zu setzen",
+    "locked": "Karte gesperrt",
+    "guessMarker": "Dein Tipp",
+    "targetMarker": "Richtiger Ort"
+  },
+  "result": {
+    "title": "Rundenergebnis",
+    "distance": "Entfernung",
+    "score": "Punkte",
+    "correctLocation": "Richtiger Ort"
+  },
+  "history": {
+    "title": "Runden",
+    "pending": "Ausstehend"
+  },
+  "final": {
+    "title": "Endpunktzahl",
+    "outOf": "von"
+  },
+  "units": {
+    "kilometers": "km",
+    "points": "Pkt."
+  }
+}
