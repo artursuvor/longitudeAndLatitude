@@ -8,7 +8,6 @@ import {
   Polyline,
   TileLayer,
   useMap,
-  useMapEvents,
 } from "react-leaflet";
 import { clampMapLatitude, getClosestWrappedLongitude } from "@/lib/geo";
 import type { Coordinate, Location, RoundResult } from "@/lib/types";
@@ -20,81 +19,93 @@ type GameMapProps = {
   locked: boolean;
   theme: "light" | "dark";
   labels: {
-    clickPrompt: string;
     guess: string;
-    locked: string;
     target: string;
   };
   onGuessChange: (coordinate: Coordinate) => void;
 };
 
-function GuessClickHandler({
+function GuessInputHandler({
   locked,
   onGuessChange,
 }: Pick<GameMapProps, "locked" | "onGuessChange">) {
-  const map = useMapEvents({
-    click(event) {
-      if (!locked) {
-        onGuessChange({
-          lat: clampMapLatitude(event.latlng.lat),
-          lng: event.latlng.lng,
-        });
-      }
-    },
-  });
+  const map = useMap();
 
   useEffect(() => {
     const container = map.getContainer();
-    let touchStart: { x: number; y: number } | null = null;
+    const listenerOptions = { capture: true, passive: true };
+    let pointerStart: {
+      moved: boolean;
+      pointerId: number;
+      x: number;
+      y: number;
+    } | null = null;
 
-    const handleTouchStart = (event: TouchEvent) => {
-      if (event.touches.length !== 1) {
-        touchStart = null;
+    const isMapControl = (target: EventTarget | null) =>
+      target instanceof HTMLElement &&
+      Boolean(
+        target.closest(
+          ".leaflet-control, .leaflet-marker-icon, .leaflet-marker-shadow",
+        ),
+      );
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        locked ||
+        !event.isPrimary ||
+        (event.pointerType === "mouse" && event.button !== 0) ||
+        isMapControl(event.target)
+      ) {
+        pointerStart = null;
         return;
       }
 
-      const touch = event.touches[0];
-      touchStart = { x: touch.clientX, y: touch.clientY };
+      pointerStart = {
+        moved: false,
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+      };
     };
 
-    const handleTouchMove = (event: TouchEvent) => {
-      if (!touchStart || event.touches.length !== 1) {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!pointerStart || pointerStart.pointerId !== event.pointerId) {
         return;
       }
 
-      const touch = event.touches[0];
       const distance = Math.hypot(
-        touch.clientX - touchStart.x,
-        touch.clientY - touchStart.y,
+        event.clientX - pointerStart.x,
+        event.clientY - pointerStart.y,
       );
 
       if (distance > 12) {
-        touchStart = null;
+        pointerStart.moved = true;
       }
     };
 
-    const handleTouchEnd = (event: TouchEvent) => {
-      if (locked || !touchStart || event.changedTouches.length !== 1) {
+    const handlePointerUp = (event: PointerEvent) => {
+      if (
+        locked ||
+        !pointerStart ||
+        pointerStart.pointerId !== event.pointerId ||
+        isMapControl(event.target)
+      ) {
         return;
       }
 
-      const touch = event.changedTouches[0];
       const distance = Math.hypot(
-        touch.clientX - touchStart.x,
-        touch.clientY - touchStart.y,
+        event.clientX - pointerStart.x,
+        event.clientY - pointerStart.y,
       );
+      const wasTap = !pointerStart.moved && distance <= 12;
 
-      touchStart = null;
+      pointerStart = null;
 
-      if (distance > 12) {
+      if (!wasTap) {
         return;
       }
 
-      const bounds = container.getBoundingClientRect();
-      const point = L.point(
-        touch.clientX - bounds.left,
-        touch.clientY - bounds.top,
-      );
+      const point = map.mouseEventToContainerPoint(event);
       const coordinate = map.containerPointToLatLng(point);
 
       onGuessChange({
@@ -103,16 +114,50 @@ function GuessClickHandler({
       });
     };
 
-    container.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    container.addEventListener("touchmove", handleTouchMove, { passive: true });
-    container.addEventListener("touchend", handleTouchEnd, { passive: true });
+    const handlePointerCancel = (event: PointerEvent) => {
+      if (pointerStart?.pointerId === event.pointerId) {
+        pointerStart = null;
+      }
+    };
+
+    container.addEventListener(
+      "pointerdown",
+      handlePointerDown,
+      listenerOptions,
+    );
+    container.addEventListener(
+      "pointermove",
+      handlePointerMove,
+      listenerOptions,
+    );
+    container.addEventListener("pointerup", handlePointerUp, listenerOptions);
+    container.addEventListener(
+      "pointercancel",
+      handlePointerCancel,
+      listenerOptions,
+    );
 
     return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-      container.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener(
+        "pointerdown",
+        handlePointerDown,
+        listenerOptions,
+      );
+      container.removeEventListener(
+        "pointermove",
+        handlePointerMove,
+        listenerOptions,
+      );
+      container.removeEventListener(
+        "pointerup",
+        handlePointerUp,
+        listenerOptions,
+      );
+      container.removeEventListener(
+        "pointercancel",
+        handlePointerCancel,
+        listenerOptions,
+      );
     };
   }, [locked, map, onGuessChange]);
 
@@ -142,31 +187,6 @@ function MapSizeObserver() {
       window.removeEventListener("resize", refreshMapSize);
     };
   }, [map]);
-
-  return null;
-}
-
-function MapInteractionLock({ locked }: { locked: boolean }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const interactions = [
-      map.dragging,
-      map.touchZoom,
-      map.doubleClickZoom,
-      map.scrollWheelZoom,
-      map.boxZoom,
-      map.keyboard,
-    ];
-
-    interactions.forEach((interaction) => {
-      if (locked) {
-        interaction.disable();
-      } else {
-        interaction.enable();
-      }
-    });
-  }, [locked, map]);
 
   return null;
 }
@@ -251,16 +271,20 @@ export function GameMap({
 
   return (
     <div
-      className={`relative h-full min-h-[420px] overflow-hidden ${
-        locked ? "map-locked" : "map-guessing"
+      className={`relative h-full min-h-[280px] overflow-hidden lg:min-h-[420px] ${
+        locked ? "map-review" : "map-guessing"
       }`}
     >
       <MapContainer
         center={[20, 0]}
         className="z-0"
+        maxBounds={[
+          [-85, -180],
+          [85, 180],
+        ]}
+        maxBoundsViscosity={1}
         minZoom={2}
         scrollWheelZoom
-        worldCopyJump
         zoom={2}
       >
         {theme === "dark" ? (
@@ -274,9 +298,8 @@ export function GameMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
         )}
-        <GuessClickHandler locked={locked} onGuessChange={onGuessChange} />
+        <GuessInputHandler locked={locked} onGuessChange={onGuessChange} />
         <MapSizeObserver />
-        <MapInteractionLock locked={locked} />
         <FitSubmittedGuess bounds={submittedBounds} />
 
         {guess ? (
@@ -306,10 +329,6 @@ export function GameMap({
           </>
         ) : null}
       </MapContainer>
-
-      <div className="pointer-events-none absolute bottom-3 left-3 z-[500] max-w-[calc(100%-1.5rem)] rounded-md border border-white/70 bg-white/92 px-3 py-2 text-sm font-medium text-stone-800 shadow-sm backdrop-blur dark:border-stone-700/80 dark:bg-stone-950/88 dark:text-stone-100">
-        {locked ? labels.locked : labels.clickPrompt}
-      </div>
     </div>
   );
 }

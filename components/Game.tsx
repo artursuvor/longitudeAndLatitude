@@ -118,28 +118,77 @@ function CoordinateReadout({
   target: { lat: number; lng: number };
 }) {
   return (
-    <section className="border-y border-stone-200 py-5 dark:border-stone-800">
-      <div className="mb-3 flex items-center gap-2 text-sm font-bold text-teal-800 dark:text-teal-300">
+    <section className="border-y border-stone-200 py-3 dark:border-stone-800 sm:py-5">
+      <div className="mb-2 flex items-center gap-2 text-sm font-bold text-teal-800 dark:text-teal-300 sm:mb-3">
         <Target className="size-4" aria-hidden="true" />
         {dictionary.coordinates.title}
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-        <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-800 dark:bg-stone-900">
-          <div className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-1">
+        <div className="rounded-lg border border-stone-200 bg-stone-50 p-2 dark:border-stone-800 dark:bg-stone-900 sm:p-3">
+          <div className="text-[10px] font-semibold uppercase text-stone-500 dark:text-stone-400 sm:text-xs">
             {dictionary.coordinates.latitude}
           </div>
-          <div className="mt-1 break-words font-mono text-xl font-bold text-stone-950 dark:text-stone-50">
+          <div className="mt-1 break-words font-mono text-sm font-bold text-stone-950 dark:text-stone-50 min-[360px]:text-base sm:text-xl">
             {formatCoordinate(target.lat, "lat")}
           </div>
         </div>
-        <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-800 dark:bg-stone-900">
-          <div className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400">
+        <div className="rounded-lg border border-stone-200 bg-stone-50 p-2 dark:border-stone-800 dark:bg-stone-900 sm:p-3">
+          <div className="text-[10px] font-semibold uppercase text-stone-500 dark:text-stone-400 sm:text-xs">
             {dictionary.coordinates.longitude}
           </div>
-          <div className="mt-1 break-words font-mono text-xl font-bold text-stone-950 dark:text-stone-50">
+          <div className="mt-1 break-words font-mono text-sm font-bold text-stone-950 dark:text-stone-50 min-[360px]:text-base sm:text-xl">
             {formatCoordinate(target.lng, "lng")}
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function RoundActions({
+  dictionary,
+  guess,
+  phase,
+  roundIndex,
+  onNextRound,
+  onSubmit,
+}: {
+  dictionary: Dictionary;
+  guess: Coordinate | null;
+  phase: Phase;
+  roundIndex: number;
+  onNextRound: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <section className="border-b border-stone-200 py-4 dark:border-stone-800 sm:py-5">
+      <div className="mb-3 text-sm font-semibold text-stone-700 dark:text-stone-300">
+        {guess
+          ? dictionary.controls.guessSelected
+          : dictionary.controls.pickFirst}
+      </div>
+      <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+        <button
+          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-teal-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-700/30 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:text-stone-600"
+          disabled={!guess || phase !== "guessing"}
+          type="button"
+          onClick={onSubmit}
+        >
+          <CheckCircle2 className="size-4" aria-hidden="true" />
+          {dictionary.controls.submit}
+        </button>
+        {phase === "revealed" ? (
+          <button
+            className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-3 text-sm font-bold text-stone-900 shadow-sm transition hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-amber-600/25 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+            type="button"
+            onClick={onNextRound}
+          >
+            {roundIndex === ROUNDS_PER_GAME - 1
+              ? dictionary.controls.finish
+              : dictionary.controls.next}
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
     </section>
   );
@@ -329,9 +378,7 @@ export function Game({ initialSeed }: GameProps) {
     [results],
   );
   const mapLabels = {
-    clickPrompt: dictionary.map.clickPrompt,
     guess: dictionary.map.guessMarker,
-    locked: dictionary.map.locked,
     target: dictionary.map.targetMarker,
   };
 
@@ -391,7 +438,7 @@ export function Game({ initialSeed }: GameProps) {
               <h1 className="text-2xl font-black text-stone-50">
                 {dictionary.app.title}
               </h1>
-              <p className="mt-1 max-w-[34rem] text-sm leading-6 text-stone-300">
+              <p className="mt-1 hidden max-w-[34rem] text-sm leading-6 text-stone-300 min-[380px]:block lg:block">
                 {dictionary.app.subtitle}
               </p>
             </div>
@@ -419,7 +466,7 @@ export function Game({ initialSeed }: GameProps) {
             />
           </div>
 
-          <div className="px-5">
+          <div className="hidden px-5 lg:block">
             {phase === "finished" ? (
               <FinalScore
                 dictionary={dictionary}
@@ -434,36 +481,14 @@ export function Game({ initialSeed }: GameProps) {
                   target={currentTarget}
                 />
 
-                <section className="border-b border-stone-200 py-5 dark:border-stone-800">
-                  <div className="mb-3 text-sm font-semibold text-stone-700 dark:text-stone-300">
-                    {guess
-                      ? dictionary.controls.guessSelected
-                      : dictionary.controls.pickFirst}
-                  </div>
-                  <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-                    <button
-                      className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-teal-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-700/30 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:text-stone-600"
-                      disabled={!guess || phase !== "guessing"}
-                      type="button"
-                      onClick={handleSubmit}
-                    >
-                      <CheckCircle2 className="size-4" aria-hidden="true" />
-                      {dictionary.controls.submit}
-                    </button>
-                    {phase === "revealed" ? (
-                      <button
-                        className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-3 text-sm font-bold text-stone-900 shadow-sm transition hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-amber-600/25 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
-                        type="button"
-                        onClick={handleNextRound}
-                      >
-                        {roundIndex === ROUNDS_PER_GAME - 1
-                          ? dictionary.controls.finish
-                          : dictionary.controls.next}
-                        <ArrowRight className="size-4" aria-hidden="true" />
-                      </button>
-                    ) : null}
-                  </div>
-                </section>
+                <RoundActions
+                  dictionary={dictionary}
+                  guess={guess}
+                  phase={phase}
+                  roundIndex={roundIndex}
+                  onNextRound={handleNextRound}
+                  onSubmit={handleSubmit}
+                />
 
                 {currentResult ? (
                   <RoundResultPanel
@@ -485,8 +510,14 @@ export function Game({ initialSeed }: GameProps) {
           </div>
         </aside>
 
+        {phase !== "finished" ? (
+          <section className="dark bg-stone-950 px-4 lg:hidden">
+            <CoordinateReadout dictionary={dictionary} target={currentTarget} />
+          </section>
+        ) : null}
+
         <section
-          className={`${theme === "dark" ? "dark bg-stone-950" : "bg-white"} relative h-[58dvh] min-h-[360px] flex-1 overflow-hidden lg:h-dvh lg:min-h-0`}
+          className={`${theme === "dark" ? "dark bg-stone-950" : "bg-white"} relative h-[46dvh] min-h-[280px] flex-none overflow-hidden lg:h-dvh lg:min-h-0`}
         >
           <SettingsToolbar
             dictionary={dictionary}
@@ -507,7 +538,35 @@ export function Game({ initialSeed }: GameProps) {
           />
         </section>
 
-        <section className="dark bg-stone-950 px-5 lg:hidden">
+        <section className="dark bg-stone-950 px-4 lg:hidden">
+          {phase === "finished" ? (
+            <FinalScore
+              dictionary={dictionary}
+              locale={locale}
+              totalScore={totalScore}
+              onRestart={handleRestart}
+            />
+          ) : (
+            <>
+              <RoundActions
+                dictionary={dictionary}
+                guess={guess}
+                phase={phase}
+                roundIndex={roundIndex}
+                onNextRound={handleNextRound}
+                onSubmit={handleSubmit}
+              />
+
+              {currentResult ? (
+                <RoundResultPanel
+                  dictionary={dictionary}
+                  locale={locale}
+                  result={currentResult}
+                />
+              ) : null}
+            </>
+          )}
+
           <RoundHistory
             dictionary={dictionary}
             locale={locale}

@@ -70,11 +70,6 @@ select {
   cursor: pointer;
 }
 
-.map-locked .leaflet-container,
-.map-locked .leaflet-interactive {
-  cursor: pointer;
-}
-
 .map-pin {
   --pin: #0f766e;
   --pin-core: #ccfbf1;
